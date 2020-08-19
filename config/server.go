@@ -3,17 +3,36 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
+type DBConfig struct {
+	User     string
+	Password string
+	Host     string
+	Port     string
+	Name     string
+}
+
+func InitDbConfig() *DBConfig {
+	config := &DBConfig{
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		Name:     os.Getenv("DB_NAME"),
+	}
+
+	return config
+}
+
 func DBConnect() (*sql.DB, error) {
-	dbUser := "root"
-	dbPass := ""
-	dbHost := "localhost"
-	dbPort := "3306"
-	dbName := "go_api"
-	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPass, dbHost, dbPort, dbName)
+
+	cfg := InitDbConfig()
+
+	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Name)
 
 	db, err := sql.Open("mysql", connection)
 	if err != nil {
