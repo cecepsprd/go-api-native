@@ -59,7 +59,7 @@ func (p *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(products)
+	json.NewEncoder(w).Encode(model.ResponseMessage{Code: http.StatusOK, Data: products})
 }
 
 func (p *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +74,7 @@ func (p *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(product)
+	json.NewEncoder(w).Encode(model.ResponseMessage{Code: http.StatusOK, Data: product})
 }
 
 func (p *ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
@@ -88,13 +88,13 @@ func (p *ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 	var pr model.Product
 	_ = json.Unmarshal(body, &pr)
 
-	product, err := service.AddProductService(ctx, p.DB, pr)
+	lastID, err := service.AddProductService(ctx, p.DB, pr)
 	if err != nil {
 		log.Println(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(product)
+	json.NewEncoder(w).Encode(model.ResponseMessage{Code: http.StatusOK, Data: lastID})
 }
 
 func (p *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +117,7 @@ func (p *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(rowsAffected)
+	json.NewEncoder(w).Encode(model.ResponseMessage{Code: http.StatusCreated, Data: rowsAffected})
 }
 
 func (p *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
@@ -132,5 +132,5 @@ func (p *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(rowsAffected)
+	json.NewEncoder(w).Encode(model.ResponseMessage{Code: http.StatusOK, Data: rowsAffected})
 }
