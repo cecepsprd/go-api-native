@@ -88,13 +88,13 @@ func (p *ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 	var pr model.Product
 	_ = json.Unmarshal(body, &pr)
 
-	lastID, err := service.AddProductService(ctx, p.DB, pr)
+	_, err = service.AddProductService(ctx, p.DB, pr)
 	if err != nil {
 		log.Println(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(model.ResponseMessage{Code: http.StatusOK, Data: lastID})
+	json.NewEncoder(w).Encode(model.ResponseMessage{Code: http.StatusOK})
 }
 
 func (p *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
@@ -111,13 +111,13 @@ func (p *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	var pr model.Product
 	_ = json.Unmarshal(body, &pr)
 
-	rowsAffected, err := service.UpdateProductService(ctx, p.DB, pr, int64(id))
+	_, err = service.UpdateProductService(ctx, p.DB, pr, int64(id))
 	if err != nil {
 		log.Println(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(model.ResponseMessage{Code: http.StatusCreated, Data: rowsAffected})
+	json.NewEncoder(w).Encode(model.ResponseMessage{Code: http.StatusCreated})
 }
 
 func (p *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
@@ -126,11 +126,11 @@ func (p *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	idParam := r.URL.Query().Get("id")
 	id, _ := strconv.Atoi(idParam)
 
-	rowsAffected, err := service.DeleteProductService(ctx, p.DB, int64(id))
+	_, err := service.DeleteProductService(ctx, p.DB, int64(id))
 	if err != nil {
 		log.Println(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(model.ResponseMessage{Code: http.StatusOK, Data: rowsAffected})
+	json.NewEncoder(w).Encode(model.ResponseMessage{Code: http.StatusOK})
 }
