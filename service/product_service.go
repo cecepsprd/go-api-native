@@ -43,3 +43,27 @@ func AddProductService(c context.Context, db *sql.DB, p model.Product) (lastID i
 
 	return
 }
+
+func UpdateProductService(c context.Context, db *sql.DB, p model.Product, id int64) (rowsAffected int64, err error) {
+	ctx, cancel := context.WithTimeout(c, 5*time.Second)
+	defer cancel()
+
+	rowsAffected, err = model.UpdateProduct(db, ctx, p, id)
+	if err != nil {
+		return 0, err
+	}
+
+	return
+}
+
+func DeleteProductService(c context.Context, db *sql.DB, id int64) (rowsAffected int64, err error) {
+	ctx, cancel := context.WithTimeout(c, 5*time.Second)
+	defer cancel()
+
+	rowsAffected, err = model.DeleteProduct(db, ctx, id)
+	if err != nil {
+		return 0, err
+	}
+
+	return
+}

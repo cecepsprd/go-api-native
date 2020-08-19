@@ -23,7 +23,7 @@ func main() {
 	http.HandleFunc("/product", productHandler.ServeHTTP)
 
 	//Starting server
-	log.Println("Starting server on port 9090")
+	log.Println("Starting server on port 9292")
 	if err := http.ListenAndServe(":9292", nil); err == nil {
 		log.Printf("Error Starting server on port : %s \n", ":9292")
 		os.Exit(1)

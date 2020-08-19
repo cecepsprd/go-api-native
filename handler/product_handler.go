@@ -22,19 +22,32 @@ func NewProductHandler(db *sql.DB) *ProductHandler {
 }
 
 func (p *ProductHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		if r.URL.Query().Get("id") != "" {
+	if r.Method == http.MethodGet {
+		//handling GET product by id
+		if r.URL.Query().Get("isd") != "" {
 			p.GetProductByID(w, r)
 			return
 		}
+		//handling get all product
 		p.GetProducts(w, r)
 		return
 	}
 
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
 		p.AddProduct(w, r)
 		return
 	}
+
+	if r.Method == http.MethodPut {
+		p.UpdateProduct(w, r)
+		return
+	}
+
+	if r.Method == http.MethodDelete {
+		p.DeleteProduct(w, r)
+		return
+	}
+
 }
 
 func (p *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
@@ -82,4 +95,42 @@ func (p *ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(product)
+}
+
+func (p *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+
+	idParam := r.URL.Query().Get("id")
+	id, _ := strconv.Atoi(idParam)
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+	}
+
+	var pr model.Product
+	_ = json.Unmarshal(body, &pr)
+
+	rowsAffected, err := service.UpdateProductService(ctx, p.DB, pr, int64(id))
+	if err != nil {
+		log.Println(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(rowsAffected)
+}
+
+func (p *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+
+	idParam := r.URL.Query().Get("id")
+	id, _ := strconv.Atoi(idParam)
+
+	rowsAffected, err := service.DeleteProductService(ctx, p.DB, int64(id))
+	if err != nil {
+		log.Println(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(rowsAffected)
 }
